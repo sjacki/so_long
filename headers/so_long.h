@@ -43,6 +43,8 @@ typedef struct s_lon
 	int		y;
 	int		x_v;
 	int		y_v;
+	int		f;
+	int		ex;
 	int		spr;
 	int		count_eat;
 	t_map	map;
@@ -91,6 +93,11 @@ void	ft_putnbr(long int n);
 void	ft_putstr(char *str, int fd);
 char	**ft_split(char const *s, char c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
+void	set_new(t_lon *lon, t_image *image, int y, int x);
+void	check_move_c(t_lon *lon, int x, int y);
+void	check_move_zero(t_lon *lon, int x, int y);
+void	move_en(t_lon *lon, int x, int y);
+void	paint_step(t_lon *lon);
 void	err_exit(char *str);
 char	*ft_itoa(int n);
 #endif

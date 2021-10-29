@@ -6,7 +6,7 @@
 /*   By: alexandr <alexandr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 00:14:27 by alexandr          #+#    #+#             */
-/*   Updated: 2021/10/29 08:34:51 by alexandr         ###   ########.fr       */
+/*   Updated: 2021/10/29 09:59:56 by alexandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,40 @@ int		check_first_line(char *line)
 	return (0);
 }
 
+void	check_ch_1(int x, int y, char **map, t_lon *m)
+{
+	if (map[y][x] == '1' || map[y][x] == '0')
+	{
+
+	}
+	else if (map[y][x] == 'W')
+	{
+		m->x_v = y;
+		m->y_v = x;
+	}
+	else if (map[y][x] == 'C')
+		m->count_eat++;
+	else if (map[y][x] == 'E')
+		m->ex++;
+	else if (map[y][x] == 'P')
+	{
+		m->x = y;
+		m->y = x;
+		m->f++;
+	}
+	else
+		err_exit("Not valid map file");
+}
+
 void	check_ch(char **map, t_lon *m)
 {
 	int	x;
 	int	y;
-	int	ex;
-	int f;
 
-	f = 0;
+	m->f = 0;
 	m->x = 0;
 	m->y = 0;
-	ex = 0;
+	m->ex = 0;
 	m->count_eat = 0;
 	y = 0;
 	while (y < m->map.height)
@@ -64,33 +87,12 @@ void	check_ch(char **map, t_lon *m)
 		x = 0;
 		while (x < m->map.width)
 		{
-			if (map[y][x] == '1' || map[y][x] == '0')
-			{
-				x++;
-				continue;
-			}
-			else if (map[y][x] == 'W')
-			{
-				m->x_v = y;
-				m->y_v = x;
-			}
-			else if (map[y][x] == 'C')
-				m->count_eat++;
-			else if (map[y][x] == 'E')
-				ex++;
-			else if (map[y][x] == 'P')
-			{
-				m->x = y;
-				m->y = x;
-				f++;
-			}
-			else
-				err_exit("Not valid map file");
+			check_ch_1(x, y, map, m);
 			x++;
 		}
 		y++;
 	}
-	if (!ex || !m->x || !m->y || !m->count_eat || f != 1)
+	if (!m->ex || !m->x || !m->y || !m->count_eat || m->f != 1)
 		err_exit("Not valid map file");
 }
 
@@ -102,8 +104,8 @@ void	get_map(char **argv, t_lon *lon)
 	int	err_gnl;
 	char	*map;
 	int	len_ex_line;
-	
-		line = NULL;
+
+	line = NULL;
 	x = 0;
 	ber_check(argv);
 	fd = open(argv[1], O_RDONLY);

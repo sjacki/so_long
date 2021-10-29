@@ -6,11 +6,28 @@
 /*   By: alexandr <alexandr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 00:14:13 by alexandr          #+#    #+#             */
-/*   Updated: 2021/10/29 08:15:47 by alexandr         ###   ########.fr       */
+/*   Updated: 2021/10/29 09:54:13 by alexandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../headers/so_long.h"
+
+int	key_press(int key, t_lon *lon)
+{
+	if (key == KEY_S)
+	{
+		lon->player->image = mlx_xpm_file_to_image(lon->mlx, "textures/down.xpm", \
+				&lon->player->width, &lon->player->height);
+		movements(lon, 1, 0);
+	}
+	if (key == KEY_D)
+	{
+		lon->player->image = mlx_xpm_file_to_image(lon->mlx, "textures/worm2.xpm", \
+			&lon->player->width, &lon->player->height);
+		movements(lon, 0, 1);
+	}
+	return (1);
+}
 
 static int	deal_key(int key, t_lon *lon)
 {
@@ -28,18 +45,7 @@ static int	deal_key(int key, t_lon *lon)
 				&lon->player->width, &lon->player->height);
 		movements(lon, 0, -1);
 	}
-	if (key == KEY_S)
-	{
-		lon->player->image = mlx_xpm_file_to_image(lon->mlx, "textures/down.xpm", \
-				&lon->player->width, &lon->player->height);
-		movements(lon, 1, 0);
-	}
-	if (key == KEY_D)
-	{
-		lon->player->image = mlx_xpm_file_to_image(lon->mlx, "textures/worm2.xpm", \
-			&lon->player->width, &lon->player->height);
-		movements(lon, 0, 1);
-	}
+	key_press(key, lon);
 	return (1);
 }
 
@@ -132,13 +138,8 @@ void	set_back(t_lon *lon)
 	}
 }
 
-void	draw_map(t_lon *lon)
+void	init_text(t_lon *lon)
 {
-	get_malloc(&lon);
-	lon->mlx = mlx_init();
-	mlx_get_screen_size(lon->mlx, &lon->width, &lon->height);
-	lon->mlx_win = mlx_new_window(lon->mlx, lon->width, lon->height, "so_long");
-	set_back(lon);
 	lon->player->image = mlx_xpm_file_to_image(lon->mlx, "textures/worm.xpm", \
 				&lon->player->width, &lon->player->height);
 	set_new_image(lon, lon->player, 'P');
@@ -157,7 +158,16 @@ void	draw_map(t_lon *lon)
 	lon->enemy->image = mlx_xpm_file_to_image(lon->mlx, "textures/enemy.xpm", \
 				&lon->enemy->width, &lon->enemy->height);
 	set_new_image(lon, lon->enemy, 'W');
+}
 
+void	draw_map(t_lon *lon)
+{
+	get_malloc(&lon);
+	lon->mlx = mlx_init();
+	mlx_get_screen_size(lon->mlx, &lon->width, &lon->height);
+	lon->mlx_win = mlx_new_window(lon->mlx, lon->width, lon->height, "so_long");
+	set_back(lon);
+	init_text(lon);
 	mlx_hook(lon->mlx_win, 2, 1L << 0, deal_key, lon);
 	mlx_hook(lon->mlx_win, 17, 1L << 0, close_window, lon);
 	mlx_loop(lon->mlx);
