@@ -6,11 +6,11 @@
 /*   By: alexandr <alexandr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 00:14:36 by alexandr          #+#    #+#             */
-/*   Updated: 2021/10/29 00:14:39 by alexandr         ###   ########.fr       */
+/*   Updated: 2021/10/29 02:00:55 by alexandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/so_long.h"
+#include "../headers/so_long.h"
 
 char	ft_check(char c, const char *set)
 {
@@ -48,6 +48,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	i = 0;
 	while (s2[i] != '\0')
 		str[j++] = s2[i++];
+	free ((void *)s1);
 	str[j] = '\0';
 	return (str);
 }

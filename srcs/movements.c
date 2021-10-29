@@ -6,77 +6,84 @@
 /*   By: alexandr <alexandr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/29 00:14:21 by alexandr          #+#    #+#             */
-/*   Updated: 2021/10/29 00:14:22 by alexandr         ###   ########.fr       */
+/*   Updated: 2021/10/29 08:28:56 by alexandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/so_long.h"
+#include "../headers/so_long.h"
 
-static void	set_new(t_lon *lon, char *textu, void *image)
+static void	set_new(t_lon *lon, t_image *image, int y, int x)
 {
-	image = mlx_xpm_file_to_image(lon->mlx, textu, \
-				&lon->width, &lon->hight);
 	mlx_put_image_to_window(lon->mlx, \
-				lon->mlx_win, image, lon->y * 20, lon->x * 20);
+	lon->mlx_win, image->image, x * \
+	 (lon->width / lon->map.width) + \
+	  (lon->width % lon->map.width), y * \
+	   (lon->height / (lon->map.height + 1)) \
+	  + (lon->height % (lon->map.height + 1)) + 20);
 }
 
-static void	print_step(t_lon **lon)
+static void	print_step(t_lon *lon)
 {
 	int	count;
 
-	count = (*lon)->steps;
-	ft_putstr("step number:");
+	count = lon->steps;
+	ft_putstr("step number:", 1);
 	ft_putnbr(count);
-	ft_putchar('\n');
+	ft_putchar('\n', 1);
 }
 
-static void	move(t_lon **lon, int x, int y)
+void	movements(t_lon *lon, int x, int y)
 {
-	set_new(*lon, "textures/floor.xpm", (*lon)->player->image);
-	(*lon)->steps++;
-	print_step(lon);
-	(*lon)->x = (*lon)->x + x;
-	(*lon)->y = (*lon)->y + y;
-	if (x == 0 && y == 1)
+	if (lon->map.buf[lon->x + x][lon->y + y] == 'C')
 	{
-		set_new(*lon, "textures/worm2.xpm", (*lon)->player->image);
+		set_new(lon, lon->floor, lon->x, lon->y);
+		set_new(lon, lon->player, lon->x + x, lon->y + y);
+		lon->map.buf[lon->x + x][lon->y + y] = '0';
+		lon->count_eat--;
+		lon->x += x;
+		lon->y += y;
+		lon->steps++;
+		print_step(lon);
 	}
-	else if (x == -1 && y == 0)
+	else if (lon->map.buf[lon->x + x][lon->y + y] == 'E')
 	{
-		set_new(*lon, "textures/up.xpm", (*lon)->player->image);
-	}
-	else if (x == 1 && y == 0)
-	{
-		set_new(*lon, "textures/down.xpm", (*lon)->player->image);
-	}
-	else
-		set_new(*lon, "textures/worm.xpm", (*lon)->player->image);
-}
-
-void	movements(t_lon **lon, int x, int y)
-{
-	if (((*lon)->map.array[(*lon)->x + x][(*lon)->y + y]) == 'C' \
-	&& (*lon)->spr != 0)
-		(*lon)->spr--;
-	if (((*lon)->map.array[(*lon)->x + x][(*lon)->y + y]) == '1')
-		set_new(*lon, "textures/face.xpm", (*lon)->player->image);
-	else if (((*lon)->map.array[(*lon)->x + x][(*lon)->y + y]) == 'E')
-	{
-		if ((*lon)->spr == 0)
+		if (lon->count_eat == 0)
 		{
-			ft_putstr("You won!\n");
+			ft_putstr("You won!\n", 1);
 			exit(1);
 		}
-		else
-			set_new(*lon, "textures/worm.xpm", (*lon)->player->image);
 	}
-	else if (((*lon)->map.array[(*lon)->x + x][(*lon)->y + y]) == 'W')
+	else if (lon->map.buf[lon->x + x][lon->y + y] == 'W')
 	{
-		ft_putstr("YOU LOSE!\n");
+		ft_putstr("You lose!\n", 1);
 		exit(1);
 	}
 	else
 	{
-		move(lon, x, y);
+		if (lon->map.buf[lon->x + x][lon->y + y] == '0')
+		{
+			set_new(lon, lon->player, lon->x + x, lon->y + y);
+			set_new(lon, lon->floor, lon->x, lon->y);
+			lon->map.buf[lon->x][lon->y] = '0';
+			lon->x += x;
+			lon->y += y;
+			lon->steps++;
+			print_step(lon);
+		}
+	}
+	mlx_string_put(lon->mlx, lon->mlx_win, 20, 30, 0x000000, "#####");
+	mlx_string_put(lon->mlx, lon->mlx_win, 21, 30, 0x000000, "#####");
+	mlx_string_put(lon->mlx, lon->mlx_win, 19, 30, 0x000000, "#####");
+	mlx_string_put(lon->mlx, lon->mlx_win, 25, 30, 0xffffff, ft_itoa(lon->steps));
+	if (lon->x_v == lon->x && lon->y_v == lon->y)
+		exit (0);
+	if (lon->map.buf[lon->x_v + x][lon->y_v + y] != '1')
+	{
+		set_new(lon, lon->floor, lon->x_v, lon->y_v);
+		set_new(lon, lon->enemy, lon->x_v + x, lon->y_v + y);
+		lon->map.buf[lon->x_v][lon->y_v] = '0';
+		lon->map.buf[lon->x_v + x][lon->y_v + y] = 'W';
+		lon->x_v += x;
+		lon->y_v += y;
 	}
 }

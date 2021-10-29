@@ -1,11 +1,12 @@
 NAME = so_long
 
-SRCS =	check_map.c	check_things.c	check_walls.c \
-		draw_map.c	get_next_line.c	\
-		movements.c	read_file.c	\
-		so_long.c	utils.c	utils2.c \
+SRCS =	srcs/check_map.c	srcs/check_things.c	srcs/check_walls.c \
+		srcs/draw_map.c	srcs/get_next_line.c	\
+		srcs/movements.c	srcs/ft_get_map.c	\
+		srcs/so_long.c	srcs/utils.c	srcs/utils2.c \
+		srcs/get_next_line_utils.c srcs/ft_split.c srcs/ft_substr.c srcs/ft_itoa.c
 
-INCLUDE = include/so_long.h
+INCLUDE = headers/so_long.h
 
 OBJS = $(SRCS:.c=.o)
 
@@ -21,7 +22,7 @@ all : $(NAME)
 	$(CC) $(CFLAGS) -I $(INCLUDE) -c $< -o $@  
 
 $(NAME) : $(OBJS) $(INCLUDE)
-	$(CC) $(CFLAGS) $(OBJS) -I./include $(MLX) libmlx.dylib -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -I./include $(MLX) -L . -o $(NAME)
 
 clean :
 	rm -rf $(OBJS)
